@@ -2,6 +2,8 @@ import math
 import matplotlib.pyplot as plt
 import random as rd
 import numpy as npy
+def add_noise(d, noise_pct):
+    return [x + rd.gauss(0, noise_pct * x) for x in d]
 
 #ISLAND
 # resources: Trees, Bushes
@@ -277,8 +279,8 @@ class Simulation:
             # print(f"week {i}: season: {self.curSeason}")
         
     def graphAnimals(self):
-        plt.plot(t, self.foxes.popArray)
-        plt.plot(t, self.rabbits.popArray)
+        plt.plot(t, add_noise(self.foxes.popArray, 0.06))
+        plt.plot(t, add_noise(self.rabbits.popArray, 0.06))
         plt.xlabel('Time')
         plt.ylabel('Population Size')
         plt.legend(('Foxes', 'Rabbits'))
@@ -286,21 +288,19 @@ class Simulation:
         plt.show()
     
     def graphPlants(self):
-        plt.plot(t, self.bushes.popArray)
-        plt.plot(t, self.trees.popArray)
-        plt.plot(t, self.mushrooms.popArray)
+        plt.plot(t, add_noise(self.bushes.popArray, 0.0029))
+        plt.plot(t, add_noise(self.trees.popArray, 0.0029))
+        plt.plot(t, add_noise(self.mushrooms.popArray, 0.0029))
         plt.xlabel('Time')
         plt.ylabel('Population Size')
         plt.legend(('Bushes', 'Trees', 'Mushrooms'))
-        plt.title('Plants population graph')
+        plt.title('Other populations graph')
         plt.show()
 
 def main():
     sim = Simulation()
     sim.run()
     sim.graphPlants()
-    print(sim.bushes.population)
-    print(sim.trees.population)
-    print(sim.mushrooms.population)
+    sim.graphAnimals()
 
 main()
