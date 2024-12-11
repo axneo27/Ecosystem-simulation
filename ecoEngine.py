@@ -26,11 +26,9 @@ def add_noise(d, noise_pct):
 # DLH = demolish likelyhood
 
 AREA = 30
-BOUNDARIES = 365
 temperature = {"Wet" : 19, "Dry" : 40}
 timestep = 0.01
-end = 104
-koef = 0.98541
+end = 52
 
 t = npy.arange(0,end,timestep)
 
@@ -72,14 +70,14 @@ class treeSpecies:
             self.population-=1
     def setFertility(self, curSeason):
         if curSeason == "Wet":
-            self.curFrates = self.DfertilityRates + 0.00316
-        else: self.curFrates = self.DfertilityRates + 0.0031
+            self.curFrates = self.DfertilityRates + 0.0001
+        else: self.curFrates = self.DfertilityRates - 0.86
         
     def update(self, curSeason):
         self.dlh = DLH(int(temperature[curSeason]/10), 10*temperature[curSeason]/10, 10000, 50)
         self.setFertility(curSeason)
         self.demolish()
-        self.population*=self.curFrates*(timestep+koef)
+        self.population*=(1 + (self.curFrates)/(end/timestep))
         self.popArray.append(self.population)
     
     def getDensity(self):
@@ -112,14 +110,14 @@ class bushesSpecies:
             self.population-=0.5
     def setFertility(self, curSeason):
         if curSeason == "Wet":
-            self.curFrates = self.DfertilityRates + 0.0028
-        else: self.curFrates = self.DfertilityRates + 0.0027
+            self.curFrates = self.DfertilityRates + 0.0009
+        else: self.curFrates = self.DfertilityRates - 0.9
         
     def update(self, curSeason):
         self.dlh = DLH(int(temperature[curSeason]/10), temperature[curSeason], 1000, 50)
         self.setFertility(curSeason)
         self.demolish()
-        self.population*=self.curFrates*(timestep+koef)
+        self.population*=(1 + (self.curFrates)/(end/timestep))
         self.popArray.append(self.population)
     
     def getDensity(self):
@@ -152,14 +150,14 @@ class mushroomsSpecies:
             self.population-=1
     def setFertility(self, curSeason):
         if curSeason == "Wet":
-            self.curFrates = self.DfertilityRates + 0.0027
-        else: self.curFrates = self.DfertilityRates + 0.0026
+            self.curFrates = self.DfertilityRates + 0.1
+        else: self.curFrates = self.DfertilityRates - 0.56
         
     def update(self, curSeason):
         self.dlh = DLH(int(temperature[curSeason]/10), temperature[curSeason], 1000, 50)
         self.setFertility(curSeason)
         self.demolish()
-        self.population*=self.curFrates*(timestep+koef)
+        self.population*=(1 + (self.curFrates)/(end/timestep))
         self.popArray.append(self.population)
     
     
@@ -171,7 +169,7 @@ class rabbitSpecies:
     DfertilityRates: float
     curFrates: float
     dlh : DLH
-    Pdeath = 0.1
+    Pdeath = 0.05
     popArray = []
     
     def __init__(self, population: int = 200, maxAge: int = 7, fertilityRates: float = 1.02): # per week
@@ -196,7 +194,7 @@ class rabbitSpecies:
         self.setFertility(curSeason)
         xd = self.popArray[curWeek-1] * (self.curFrates - self.Pdeath*predPopulaion[curWeek-1]) #######
         
-        next_x = resIndex - 1 + 0.0014 + self.popArray[curWeek-1] + xd * timestep
+        next_x = resIndex - 1 + self.popArray[curWeek-1] + xd * timestep
         self.popArray.append(next_x)
         self.population = next_x
         self.demolish()
