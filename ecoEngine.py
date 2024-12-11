@@ -264,13 +264,12 @@ class Simulation:
         self.mushrooms.update(self.curSeason)
     
     def run(self):
-        s = 0
         for i in range(1, len(t)):
-            if i < 2600 + (self.year*len(t)):
+            if i < 26/timestep + (self.year*len(t)):
                 self.curSeason = "Wet"
-            elif i > 2600 + (self.year*len(t)):
+            elif i > 26/timestep + (self.year*len(t)):
                 self.curSeason = "Dry"
-            if i == 5200: self.year+=1
+            if i == 52/timestep: self.year+=1
             self.step()
             self.rabbits.update(self.curSeason, i, self.foxes.popArray, self.resourcesIndex)
             self.foxes.update(self.curSeason, i, self.rabbits.popArray)
